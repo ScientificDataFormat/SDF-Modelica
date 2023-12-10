@@ -1,0 +1,9 @@
+.idea/
+ThirdParty/hdf5-x86_64-windows
+ThirdParty/matio-x86_64-windows
+ThirdParty/hdf5-x86_64-linux
+ThirdParty/matio-x86_64-linux
+ThirdParty/hdf5-aarch64-linux
+ThirdParty/matio-aarch64-linux
+x86_64-windows
+x86_64-linux

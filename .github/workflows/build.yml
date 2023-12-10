@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - name: win64
+            image: windows-2022
+            cmake-args: -G "Visual Studio 17 2022" -A x64
+          - name: win32
+            image: windows-2022
+            cmake-args: -G "Visual Studio 17 2022" -A Win32
+          - name: linux64
+            image: ubuntu-20.04
+            cmake-args: -G "Unix Makefiles"
+          - name: darwin64
+            image: macos-11
+            cmake-args: -G "Unix Makefiles" -D CMAKE_OSX_ARCHITECTURES=x86_64
+    runs-on: ${{ matrix.image }}
+    steps:
+    - uses: actions/checkout@v4.1.1
+      with:
+        submodules: recursive
+    - run: |
+        cmake ${{ matrix.cmake-args }} -D BUILD_SHARED_LIBS=OFF -D BUILD_TESTING=OFF -D HDF5_BUILD_CPP_LIB=OFF -D HDF5_BUILD_EXAMPLES=OFF -D HDF5_BUILD_TOOLS=OFF -D HDF5_BUILD_UTILS=OFF -D CMAKE_INSTALL_PREFIX=ThirdParty/hdf5-${{ matrix.name }}/install -D CMAKE_POLICY_DEFAULT_CMP0091=NEW -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -B ThirdParty/hdf5-${{ matrix.name }}/build ThirdParty/hdf5
+        cmake --build ./ThirdParty/hdf5-${{ matrix.name }}/build --config Release --target install
+    - run: |
+        cmake ${{ matrix.cmake-args }} -D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -D MATIO_MAT73=OFF -D MATIO_SHARED=OFF -D MATIO_WITH_HDF5=OFF -D MATIO_WITH_ZLIB=OFF -D CMAKE_INSTALL_PREFIX=ThirdParty/matio-${{ matrix.name }}/install -D CMAKE_POLICY_DEFAULT_CMP0091=NEW -B ThirdParty/matio-${{ matrix.name }}/build ThirdParty/matio
+        cmake --build ./ThirdParty/matio-${{ matrix.name }}/build --config Release --target install
+    - run: |
+        cmake ${{ matrix.cmake-args }} -B ${{ matrix.name }} .
+        cmake --build ${{ matrix.name }} --config Release
+        ctest --test-dir ${{ matrix.name }} --build-config Release
+    - uses: actions/upload-artifact@v4.3.1
+      with:
+        name: ${{ matrix.name }}
+        path: SDF
+        if-no-files-found: error
+  merge:
+    runs-on: ubuntu-20.04
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v4.1.1
+    - uses: actions/download-artifact@v4.1.2
+      with:
+        name: win64
+        path: SDF
+    - uses: actions/download-artifact@v4.1.2
+      with:
+        name: win32
+        path: SDF
+    - uses: actions/download-artifact@v4.1.2
+      with:
+        name: linux64
+        path: SDF
+    - uses: actions/download-artifact@v4.1.2
+      with:
+        name: darwin64
+        path: SDF
+    - run: find -type f -name .gitignore -delete
+    - uses: actions/upload-artifact@v4.3.1
+      with:
+        name: SDF-Modelica
+        path: |
+          SDF
+          LICENSE.txt
+          README.md
+        if-no-files-found: error
