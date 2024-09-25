@@ -22,7 +22,7 @@ jobs:
             image: ubuntu-20.04
             cmake-args: -G "Unix Makefiles"
           - name: darwin64
-            image: macos-11
+            image: macos-12
             cmake-args: -G "Unix Makefiles" -D CMAKE_OSX_ARCHITECTURES=x86_64
     runs-on: ${{ matrix.image }}
     steps:
