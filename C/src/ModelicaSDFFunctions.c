@@ -793,6 +793,10 @@ const char * ModelicaSDF_attach_scale(const char *filename, const char *dataset_
 		goto out;
 	}
 
+	if (dim_name && strlen(dim_name) == 0) {
+		dim_name = NULL;
+	}
+
 	if (H5DSset_scale(scale_id, dim_name) < 0) {
 		set_error_message("Failed to set scale on '%s'", scale_name);
 		goto out;
