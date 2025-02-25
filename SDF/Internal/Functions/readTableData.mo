@@ -11,4 +11,5 @@ impure function readTableData
   external "C" errorMessage= ModelicaSDF_read_table_data(fileName, datasetName, size(scaleUnits, 1), unit, scaleUnits, data) annotation (
   Library={"ModelicaSDF"},
   LibraryDirectory="modelica://SDF/Resources/Library");
+  annotation(__Dymola_impureConstant=true);
 end readTableData;

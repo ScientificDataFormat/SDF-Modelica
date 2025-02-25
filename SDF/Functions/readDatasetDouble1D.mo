@@ -14,4 +14,5 @@ algorithm
     datasetName,
     unit);
   assert(Modelica.Utilities.Strings.isEmpty(errorMessage), errorMessage);
+  annotation(__Dymola_impureConstant=true);
 end readDatasetDouble1D;

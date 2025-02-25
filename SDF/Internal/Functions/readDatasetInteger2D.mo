@@ -9,4 +9,5 @@ impure function readDatasetInteger2D
   external "C" errorMessage= ModelicaSDF_read_dataset_int(fileName, datasetName, unit, data) annotation (
   Library={"ModelicaSDF"},
   LibraryDirectory="modelica://SDF/Resources/Library");
+  annotation(__Dymola_impureConstant=true);
 end readDatasetInteger2D;

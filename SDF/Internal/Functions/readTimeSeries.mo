@@ -11,4 +11,5 @@ impure function readTimeSeries
   external "C" errorMessage= ModelicaSDF_read_time_series(fileName, size(datasetNames, 1), datasetNames, datasetUnits, scaleUnit, nsamples, data) annotation (
   Library={"ModelicaSDF"},
   LibraryDirectory="modelica://SDF/Resources/Library");
+  annotation(__Dymola_impureConstant=true);
 end readTimeSeries;
