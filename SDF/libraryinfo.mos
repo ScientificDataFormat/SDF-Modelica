@@ -1,4 +1,5 @@
 LibraryInfoMenuCommand(
+  subCategory = {"More Dymola", "Additional libraries for Dymola."},
   category="libraries",
   text="SDF",
   reference="SDF",
