@@ -3,8 +3,8 @@ LibraryInfoMenuCommand(
   category="libraries",
   text="SDF",
   reference="SDF",
-  version="0.4.4",
+  version="0.4.5",
   isModel=true,
-  description="Scientific Data Format (0.4.4)",
+  description="Scientific Data Format (0.4.5)",
   ModelicaVersion=">=4.0.0",
   pos=010)

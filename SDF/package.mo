@@ -8,7 +8,7 @@ package SDF "Scientific Data Format"
 
 
   annotation (uses(Modelica(version="4.0.0")),
-    version="0.4.3",
+    version="0.4.5",
     versionBuild=1,
     Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {100,100}}), graphics={
