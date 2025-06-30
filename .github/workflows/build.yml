@@ -19,7 +19,7 @@ jobs:
             image: windows-2022
             cmake-args: -G "Visual Studio 17 2022" -A Win32
           - name: linux64
-            image: ubuntu-20.04
+            image: ubuntu-22.04
             cmake-args: -G "Unix Makefiles"
           - name: darwin64
             image: macos-13
@@ -45,7 +45,7 @@ jobs:
         path: SDF
         if-no-files-found: error
   merge:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [build]
     steps:
     - uses: actions/checkout@v4.1.7
