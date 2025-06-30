@@ -1,3 +1,5 @@
+![SDF Package](SDF/Resources/Images/SDF_package.svg)
+
 # Scientific Data Format for Modelica
 
 SDF is a Modelica library to read, write and interpolate multidimensional data.
@@ -18,5 +20,5 @@ The SDF library ships with [Dymola](https://www.3ds.com/products/catia/dymola) a
 
 ## License
 
-Copyright (c) 2024 Dassault Systèmes.
+Copyright &copy; 2025 Dassault Systèmes.
 The code is released under the [2-Clause BSD license](LICENSE.txt).
