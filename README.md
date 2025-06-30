@@ -20,7 +20,7 @@ The SDF library ships with [Dymola](https://www.3ds.com/products/catia/dymola) a
 
 ## License
 
-Copyright (c) 2025 Dassault Systèmes.
+Copyright &copy; 2025 Dassault Systèmes.
 The code is released under the [2-Clause BSD license](LICENSE.txt).
 
 ------------------------------------
