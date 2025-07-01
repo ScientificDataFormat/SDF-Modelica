@@ -7,9 +7,8 @@ package SDF "Scientific Data Format"
 
 
 
-  annotation (uses(Modelica(version="4.0.0")),
-    version="0.4.5",
-    versionBuild=1,
+  annotation (uses(Modelica(version="4.1.0")),
+    version="0.4.6",
     Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {100,100}}), graphics={
         Rectangle(
@@ -36,5 +35,6 @@ package SDF "Scientific Data Format"
     Documentation(info="<html>
 <p>The SDF package contains blocks and functions to read, write and interpolate multi-dimensional data using the <a href=\"https://github.com/ScientificDataFormat/SDF\">Scientific Data Format</a>.</p>
 </html>", revisions="<html>
-</html>"));
+</html>"),
+    conversion(noneFromVersion="0.4.5"));
 end SDF;
