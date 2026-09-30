@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.2)
+cmake_minimum_required (VERSION 4.0)
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -99,3 +99,15 @@ set_property(TARGET ModelicaSDF_Test PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${C
 enable_testing()
 
 add_test(NAME ModelicaSDF_Test COMMAND $<TARGET_FILE:ModelicaSDF_Test> WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/C/tests")
+
+add_library(NDTable SHARED
+  SDF/Resources/C-Sources/NDTable.h
+  SDF/Resources/C-Sources/ModelicaNDTable.c
+  SDF/Resources/C-Sources/NDTable.h
+  ThirdParty/ModelicaUtilities.h
+  ThirdParty/ModelicaUtilities.c
+)
+
+target_include_directories(NDTable PUBLIC
+	ThirdParty
+)

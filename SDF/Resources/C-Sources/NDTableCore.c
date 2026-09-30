@@ -15,18 +15,6 @@
 
 static char error_message[MAX_MESSAGE_LENGTH] = "";
 
-
-/* A string comparison that returns 1 if a is NULL, empty ("") or equal b and 0 otherwise */
-static int streq(const char *a, const char *b) {
-	if(a == NULL || strlen(a) == 0)
-		return 1;
-
-	if(b == NULL || strlen(b) == 0)
-		return 0;
-
-	return strcmp(a, b) == 0;
-}
-
 void NDTable_set_error_message(const char *msg, ...) {
 	va_list vargs;
 	va_start(vargs, msg);
@@ -56,17 +44,17 @@ const char * NDTable_get_error_message() {
 	return error_message;
 }
 
-void NDTable_calculate_offsets(int ndims, const int dims[], int *offs) {
+void NDTable_calculate_offsets(int ndims, const int dims[], int offs[]) {
 	int i;
 
 	if(ndims < 1) {
 		return;
 	}
 
-	offs[ndims-1] = 1;
+	offs[ndims - 1] = 1;
 
 	for(i = ndims-2; i >= 0; i--) {
-		offs[i] = offs[i+1] * dims[i+1];  
+		offs[i] = offs[i + 1] * dims[i + 1];  
 	}
 }
 
@@ -76,67 +64,67 @@ int NDTable_validate_table(NDTable_h table) {
 
 	// check the rank
 	if(table->ndims < 0 || table->ndims > 32) {
-		NDTable_set_error_message("The rank of '%s' in '%s' must be in the range [0;32] but was %d", "table->datasetname", "table->filename", table->ndims);
+		NDTable_set_error_message("The rank of must be in the range [0;32] but was %d", table->ndims);
 		return -1;
 	}
-
+	
 	// check the extent of the dimensions
 	for(i = 0; i < table->ndims; i++) {
 		if(table->dims[i] < 1) {
-			NDTable_set_error_message("Extent of dimension %d of '%s' in '%s' must be >=0 but was %d", i, "table->datasetname", "table->filename", table->dims[i]);
+			NDTable_set_error_message("Extent of dimension %d of must be >=0 but was %d", i, table->dims[i]);
 			return -1;
 		}
 	}
-
+	
 	// check the number of values
 	numel = 1;
 	for(i = 0; i < table->ndims; i++) {
 		numel = numel * table->dims[i];
 	}
-
+	
 	if(table->numel != numel) {
-		NDTable_set_error_message("The size of '%s' in '%s' does not match its extent", "table->datasetname", "table->filename");
+		NDTable_set_error_message("The size of does not match its extent");
 		return -1;
 	}
-
+	
 	// check the offsets
 	NDTable_calculate_offsets(table->ndims, table->dims, offs);
 	for(i = 0; i < table->ndims; i++) {
 		if(table->offs[i] != offs[i]) {
-			NDTable_set_error_message("The offset[%d] of '%s' in '%s' must be %d but was %d", i, "table->datasetname", "table->filename", offs[i], table->offs[i]);
+			NDTable_set_error_message("The offset[%d] of must be %d but was %d", i, offs[i], table->offs[i]);
 			return -1;
 		}
 	}
 	
 	// check the scales
 	for(i = 0; i < table->ndims; i++) {
-
+		
 		// make sure a scale is set
 		if(table->scales[i] == NULL) {
-			NDTable_set_error_message("Scale for dimension %d of '%s' in '%s' is not set", i, "table->datasetname", "table->filename");
+			NDTable_set_error_message("Scale for dimension %d of is not set", i);
 			return -1;
 		}
-
+		
 		// check strict monotonicity
 		v = table->scales[i][0];
 		for(j = 1; j < table->dims[i]; j++) {
 			if(v >= table->scales[i][j]) {
-				NDTable_set_error_message("Scale for dimension %d of '%s' in '%s' is not strictly monotonic increasing at index %d", i, "table->datasetname", "table->filename", j);
+				NDTable_set_error_message("Scale for dimension %d of is not strictly monotonic increasing at index %d", i, j);
 				return -1;
 			}
 			v = table->scales[i][j];
 		}
 		
 		if(table->offs[i] != offs[i]) {
-			NDTable_set_error_message("The offset[%d] of '%s' in '%s' must be %d but was %d", i, "table->datasetname", "table->filename", offs[i], table->offs[i]);
+			NDTable_set_error_message("The offset[%d] of must be %d but was %d", i, offs[i], table->offs[i]);
 			return -1;
 		}
 	}
-
+	
 	// check the data for non-finite values
 	for(i = 0; i < table->numel; i++) {
 		if(!ISFINITE(table->data[i])) {
-			NDTable_set_error_message("The data value at index %d of '%s' in '%s' is not finite", i, "table->datasetname", "table->filename");
+			NDTable_set_error_message("The data value at index %d of is not finite", i);
 			return -1;
 		}
 	}
@@ -154,7 +142,7 @@ int NDTable_calculate_numel(int ndims, const int dims[]) {
 	return numel;
 }
 
-void NDTable_ind2sub(const int index, const NDTable_h table, int *subs) {
+void NDTable_ind2sub(const int index, const NDTable_h table, int subs[]) {
 	int i, n = index; // number of remaining elements
 
 	for(i = 0; i < table->ndims; i++) {

@@ -55,30 +55,25 @@ const char * NDTable_get_error_message();
 
 /*! Evaluate the value of the table at the given sample point using the specified inter- and extrapolation methods
  * 
- * @param [in]	table			the table handle
- * @param [in]	nparams			the number of dimensions
- * @param [in]	params			the sample point
- * @param [in]	interp_method	the interpolation method
- * @param [in]	extrap_method	the extrapolation method
- * @param [out]	value			the value at the sample point  
- * 
+ * @param [in]	table		   table handle
+ * @param [in]	params		   sample point
+ * @param [in]	start_dim      start dimension point
+ * @param [in]	interp_method  interpolation method (all dimensions)
+ * @param [in]	extrap_method  extrapolation method (all dimensions)
+ * @param [out]	value		   value at the sample point
+ * @param [out]	derivative     derivative w.r.t start dimension
+ *
  * @return		0 if the value could be evaluated, -1 otherwise
  */
-int NDTable_evaluate(NDTable_h table, int nparams, const double params[], NDTable_InterpMethod_t interp_method, NDTable_ExtrapMethod_t extrap_method, double *value);
-
-/*! Evalute the total differential of the table at the given sample point and deltas using the specified inter- and extrapolation methods
- * 
- * @param [in]	table			the table handle
- * @param [in]	nparams			the number of dimensions
- * @param [in]	params			the sample point
- * @param [in]	delta_params	the the deltas
- * @param [in]	interp_method	the interpolation method
- * @param [in]	extrap_method	the extrapolation method
- * @param [out]	value			the total differential at the sample point  
- * 
- * @return		0 if the value could be evaluated, -1 otherwise
- */
-int NDTable_evaluate_derivative(NDTable_h table, int nparams, const double params[], const double delta_params[], NDTable_InterpMethod_t interp_method, NDTable_ExtrapMethod_t extrap_method, double *value);
+int NDTable_evaluate(
+	NDTable_h table, 
+	const double params[], 
+	int start_dim, 
+	NDTable_InterpMethod_t interp_method,
+	NDTable_ExtrapMethod_t extrap_method,
+	double *value,
+	double *derivative
+);
 
 /*! The maximum length of an error message */	
 #define MAX_MESSAGE_LENGTH 256
@@ -126,9 +121,20 @@ double NDTable_get_value_subs(const NDTable_h table, const int subs[]);
  * 
  *	@return 0
  */
-void NDTable_find_index(double value, int num_values, const double values[], int *index, double *t, NDTable_ExtrapMethod_t extrap_method);
+void NDTable_find_index(double value, int num_values, const double values[], int *index, double *t);
 
-int NDTable_evaluate_internal(const NDTable_h table, const double *t, const int *subs, int *nsubs, int dim, NDTable_InterpMethod_t interp_method, NDTable_ExtrapMethod_t extrap_method, double *value, double *derivatives);
+int NDTable_evaluate_internal(
+	const NDTable_h table, 
+	const double *t, 
+	const int *subs, 
+	int *nsubs, 
+	int dim, 
+	int dim0, 
+	NDTable_InterpMethod_t interp_method,
+	NDTable_ExtrapMethod_t extrap_method,
+	double *value,
+	double *derivatives
+);
 
 NDTable_h NDTable_create_table(int ndims, const int *dims, const double *data, const double **scales);
 
