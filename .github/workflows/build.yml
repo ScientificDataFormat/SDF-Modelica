@@ -21,12 +21,9 @@ jobs:
           - name: linux64
             image: ubuntu-22.04
             cmake-args: -G "Unix Makefiles"
-          - name: darwin64
-            image: macos-13
-            cmake-args: -G "Unix Makefiles" -D CMAKE_OSX_ARCHITECTURES=x86_64
     runs-on: ${{ matrix.image }}
     steps:
-    - uses: actions/checkout@v4.1.7
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
     - run: |
@@ -39,7 +36,7 @@ jobs:
         cmake ${{ matrix.cmake-args }} -B ${{ matrix.name }} .
         cmake --build ${{ matrix.name }} --config Release
         ctest --test-dir ${{ matrix.name }} --build-config Release
-    - uses: actions/upload-artifact@v4.4.0
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.name }}
         path: SDF
@@ -48,25 +45,21 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build]
     steps:
-    - uses: actions/checkout@v4.1.7
-    - uses: actions/download-artifact@v4.1.8
+    - uses: actions/checkout@v7
+    - uses: actions/download-artifact@v8
       with:
         name: win64
         path: SDF
-    - uses: actions/download-artifact@v4.1.8
+    - uses: actions/download-artifact@v8
       with:
         name: win32
         path: SDF
-    - uses: actions/download-artifact@v4.1.8
+    - uses: actions/download-artifact@v8
       with:
         name: linux64
         path: SDF
-    - uses: actions/download-artifact@v4.1.8
-      with:
-        name: darwin64
-        path: SDF
     - run: find -type f -name .gitignore -delete
-    - uses: actions/upload-artifact@v4.4.0
+    - uses: actions/upload-artifact@v7
       with:
         name: SDF-Modelica
         path: |
