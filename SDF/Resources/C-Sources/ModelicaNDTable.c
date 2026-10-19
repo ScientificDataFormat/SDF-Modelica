@@ -5,10 +5,20 @@
 #include "ModelicaUtilities.h"
 
 #include "NDTable.h"
-#include "NDTable.c"
+#include "NDTableCore.c"
 
 #define NDTABLE_INTERPSTATUS_OK 0
-#include "Interpolation.c"
+#include "NDTableInterpolation.c"
+
+#define MODELICA_ASSERT_NOT_NULL(argument) \
+	if ((argument) == NULL) { \
+		ModelicaFormatError("Argument '%s' must not be NULL", #argument); \
+	}
+
+#define MODELICA_ASSERT_INT_ARG(actual, expected) \
+	if ((actual) != (expected)) { \
+		ModelicaFormatError("Argument %s=%d must be equal to %s=%d", #actual, actual, #expected, expected); \
+	}
 
 NDTable_h ModelicaNDTable_open(const int ndims, const double *data, const int size) {
 
@@ -92,14 +102,19 @@ void ModelicaNDTable_close(NDTable_h externalTable) {
 
 double ModelicaNDTable_evaluate(
 	NDTable_h table,
-	int nparams, 
-	const double params[], 
+	int nparams,
+	const double params[],
 	NDTable_InterpMethod_t interp_method,
-	NDTable_ExtrapMethod_t extrap_method) {
+	NDTable_ExtrapMethod_t extrap_method
+) {
+	MODELICA_ASSERT_NOT_NULL(table);
+	MODELICA_ASSERT_INT_ARG(nparams, table->ndims);
+	MODELICA_ASSERT_NOT_NULL(params);
 
-	double value;
+	double value = 0.0;
+	double derivative = 0.0;
 
-	if (NDTable_evaluate(table, nparams, params, interp_method, extrap_method, &value)) {
+	if (NDTable_evaluate(table, params, 0, interp_method, extrap_method, &value, &derivative)) {
 		ModelicaError(NDTable_get_error_message());
 	}
 
@@ -108,19 +123,64 @@ double ModelicaNDTable_evaluate(
 
 double ModelicaNDTable_evaluate_derivative(
 	NDTable_h table,
-	int nparams, 
+	int nparams,
 	const double params[],
 	NDTable_InterpMethod_t interp_method,
-	NDTable_ExtrapMethod_t extrap_method, 
+	NDTable_ExtrapMethod_t extrap_method,
 	const double delta_params[]) {
 
-	double value;
+	MODELICA_ASSERT_NOT_NULL(table);
+	MODELICA_ASSERT_INT_ARG(nparams, table->ndims);
+	MODELICA_ASSERT_NOT_NULL(params);
+	MODELICA_ASSERT_NOT_NULL(delta_params);
 
-	if(NDTable_evaluate_derivative(table, nparams, params, delta_params, interp_method, extrap_method, &value)) {
-		ModelicaError(NDTable_get_error_message());
+	double total_derivative = 0.0;
+
+	for (int i = 0; i < nparams; i++) {
+
+		if (delta_params[i] == 0.0) {
+			continue;
+		}
+
+		double value = 0.0;
+		double derivative = 0.0;
+
+		if (NDTable_evaluate(table, params, i, interp_method, extrap_method, &value, &derivative)) {
+			ModelicaError(NDTable_get_error_message());
+		}
+
+		total_derivative += derivative * delta_params[i];
 	}
 
-	return value;
+	return total_derivative;
 }
+
+void ModelicaNDTable_evaluate_partial_derivatives(
+	NDTable_h table,
+	int nparams,
+	const double params[],
+	NDTable_InterpMethod_t interp_method,
+	NDTable_ExtrapMethod_t extrap_method,
+	double derivatives[]
+) {
+	MODELICA_ASSERT_NOT_NULL(table);
+	MODELICA_ASSERT_INT_ARG(nparams, table->ndims);
+	MODELICA_ASSERT_NOT_NULL(params);
+	MODELICA_ASSERT_NOT_NULL(derivatives);
+
+	for (int i = 0; i < nparams; i++) {
+		double value = 0.0;
+		double derivative = 0.0;
+
+		if (NDTable_evaluate(table, params, i, interp_method, extrap_method, &value, &derivative)) {
+			ModelicaError(NDTable_get_error_message());
+		}
+
+		derivatives[i] = derivative;
+	}
+}
+
+#undef MODELICA_ASSERT_NOT_NULL
+#undef MODELICA_ASSERT_INT_ARG
 
 #endif // MODELICA_NDTABLE_C
